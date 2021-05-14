@@ -1,13 +1,11 @@
 extends "motion.gd"
 
 func enter():
+  print("start playing idle")
   owner.get_node("AnimatedSprite").play("idle")
 
-# func return_to(_state):
-#   owner.get_node("AnimatedSprite").play("idle")
-
 func handle_input(event: InputEvent):
-  if Input.is_action_just_pressed("rmb"):
+  if event.is_action_pressed("rmb"):
     emit_signal("finished", "charging")
   return .handle_input(event)
 

@@ -1,14 +1,18 @@
 extends "res://StateMachine/state_machine.gd"
 
-onready var idle   = $Idle
+onready var idle     = $Idle
 onready var moving   = $Moving
 onready var charging = $Charging
+onready var charged  = $Charged
+onready var stunned  = $Stunned
 
 func _ready():
   states_map = {
-    "idle":   idle,
+    "idle":     idle,
     "moving":   moving,
-    "charging": charging
+    "charging": charging,
+    "charged":  charged,
+    "stunned":  stunned
   }
 
 func _change_state(state_name):

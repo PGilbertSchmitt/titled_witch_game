@@ -1,12 +1,15 @@
-[gd_scene load_steps=29 format=2]
+[gd_scene load_steps=38 format=2]
 
 [ext_resource path="res://Assets/Witch/B_witch_charge_300.png" type="Texture" id=1]
 [ext_resource path="res://Assets/Witch/B_witch_idle_300.png" type="Texture" id=2]
 [ext_resource path="res://Scenes/Witch/witch_state_machine.gd" type="Script" id=3]
+[ext_resource path="res://Scenes/Witch/States/charged.gd" type="Script" id=4]
 [ext_resource path="res://Assets/Witch/B_witch_run_300.png" type="Texture" id=5]
 [ext_resource path="res://Scenes/Witch/States/charging.gd" type="Script" id=6]
 [ext_resource path="res://Scenes/Witch/States/idle.gd" type="Script" id=7]
 [ext_resource path="res://Scenes/Witch/States/moving.gd" type="Script" id=8]
+[ext_resource path="res://Assets/Witch/B_witch_take_damage_300.png" type="Texture" id=9]
+[ext_resource path="res://Scenes/Witch/States/stunned.gd" type="Script" id=10]
 
 [sub_resource type="AtlasTexture" id=1]
 atlas = ExtResource( 2 )
@@ -64,6 +67,18 @@ region = Rect2( 0, 864, 96, 144 )
 atlas = ExtResource( 5 )
 region = Rect2( 0, 1008, 96, 144 )
 
+[sub_resource type="AtlasTexture" id=25]
+atlas = ExtResource( 9 )
+region = Rect2( 0, 144, 96, 144 )
+
+[sub_resource type="AtlasTexture" id=26]
+atlas = ExtResource( 9 )
+region = Rect2( 0, 0, 96, 144 )
+
+[sub_resource type="AtlasTexture" id=27]
+atlas = ExtResource( 9 )
+region = Rect2( 0, 288, 96, 144 )
+
 [sub_resource type="AtlasTexture" id=7]
 atlas = ExtResource( 1 )
 region = Rect2( 0, 0, 144, 144 )
@@ -84,6 +99,18 @@ region = Rect2( 0, 432, 144, 144 )
 atlas = ExtResource( 1 )
 region = Rect2( 0, 576, 144, 144 )
 
+[sub_resource type="AtlasTexture" id=22]
+atlas = ExtResource( 1 )
+region = Rect2( 0, 144, 144, 144 )
+
+[sub_resource type="AtlasTexture" id=23]
+atlas = ExtResource( 1 )
+region = Rect2( 0, 288, 144, 144 )
+
+[sub_resource type="AtlasTexture" id=24]
+atlas = ExtResource( 1 )
+region = Rect2( 0, 432, 144, 144 )
+
 [sub_resource type="SpriteFrames" id=20]
 animations = [ {
 "frames": [ SubResource( 1 ), SubResource( 2 ), SubResource( 3 ), SubResource( 4 ), SubResource( 5 ), SubResource( 6 ) ],
@@ -96,9 +123,19 @@ animations = [ {
 "name": "move",
 "speed": 8.0
 }, {
+"frames": [ SubResource( 25 ), SubResource( 26 ), SubResource( 27 ), SubResource( 26 ), SubResource( 27 ) ],
+"loop": false,
+"name": "stunned",
+"speed": 8.0
+}, {
 "frames": [ SubResource( 7 ), SubResource( 8 ), SubResource( 9 ), SubResource( 10 ), SubResource( 11 ) ],
 "loop": true,
 "name": "charging",
+"speed": 8.0
+}, {
+"frames": [ SubResource( 22 ), SubResource( 23 ), SubResource( 24 ) ],
+"loop": true,
+"name": "charged",
 "speed": 8.0
 } ]
 
@@ -110,7 +147,9 @@ height = 16.4793
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 frames = SubResource( 20 )
-animation = "charging"
+animation = "stunned"
+frame = 4
+playing = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2( -1.76578, 30.3713 )
@@ -133,3 +172,14 @@ script = ExtResource( 8 )
 
 [node name="Charging" type="Node" parent="StateMachine"]
 script = ExtResource( 6 )
+
+[node name="ChargeTimer" type="Timer" parent="StateMachine/Charging"]
+one_shot = true
+
+[node name="Charged" type="Node" parent="StateMachine"]
+script = ExtResource( 4 )
+
+[node name="Stunned" type="Node" parent="StateMachine"]
+script = ExtResource( 10 )
+[connection signal="animation_finished" from="AnimatedSprite" to="StateMachine" method="_on_animation_finished"]
+[connection signal="timeout" from="StateMachine/Charging/ChargeTimer" to="StateMachine/Charging" method="_on_ChargeTimer_timeout"]
